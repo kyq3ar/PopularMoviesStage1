@@ -17,7 +17,7 @@ public final class NetworkUtils {
             "http://api.themoviedb.org/3/movie";
     private static final String MOVIE_BASE_URL = STATIC_MOVIE_URL;
 
-    private static final String api_key = "15992d005bb7e1c817bf9fced11de961";
+    private static final String api_key = "";
 
     static final String API_PARAM = "api_key";
 
