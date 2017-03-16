@@ -25,7 +25,6 @@ public class ReviewAdapter extends ArrayAdapter<String> {
             view = LayoutInflater.from(getContext())
                     .inflate(R.layout.review_item, viewGroup, false);
         }
-        Log.d(TAG, "I AM HERE");
         String [] reviewInfo = getItem(position).split("\\|");
         TextView authorTextView = (TextView) view.findViewById(R.id.review_author);
         authorTextView.setText(reviewInfo[0]);

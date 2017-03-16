@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.utilities;
 
 import android.net.Uri;
+import com.example.android.popularmovies.BuildConfig;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,9 +18,9 @@ public final class NetworkUtils {
             "http://api.themoviedb.org/3/movie";
     private static final String MOVIE_BASE_URL = STATIC_MOVIE_URL;
 
-    private static final String api_key = "";
-
     static final String API_PARAM = "api_key";
+
+    static final String api_key = BuildConfig.API_KEY;
 
     public static URL buildUrl(String sortOrder) {
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
