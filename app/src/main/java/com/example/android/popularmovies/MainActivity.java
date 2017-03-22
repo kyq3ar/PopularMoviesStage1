@@ -4,14 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +22,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.FavoriteAdapter;
+import com.example.android.popularmovies.data.FavoriteContract;
+import com.example.android.popularmovies.data.FavoriteDbHelper;
 import com.example.android.popularmovies.utilities.MovieJsonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
@@ -41,6 +44,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private String sortOrder;
 
+    private SQLiteDatabase mDb;
+
+    private FavoriteAdapter mFavoriteAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +64,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
+
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
         sortOrder = "popular";
         setTitle("Popular");
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+
+        FavoriteDbHelper helper = new FavoriteDbHelper(this);
+        mDb = helper.getWritableDatabase();
+
+        Cursor cursor = getAllFavorites();
+        //mFavoriteAdapter = new FavoriteAdapter(this, this, cursor);
+
+        // TODO (12) Pass the resulting cursor count to the adapter
+        //mMovieAdapter = new FavoriteAdapter(this, cursor.getCount());
+        // Link the adapter to the RecyclerView
+        //waitlistRecyclerView.setAdapter(mAdapter);
 
         if(isOnline())
             loadMovieData();
@@ -182,15 +202,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mMovieAdapter.setMovieData(null);
                 sortOrder = "favorites";
                 setTitle("Favorites");
-                SharedPreferences sp = getSharedPreferences("favorites", Activity.MODE_PRIVATE);
-                Map<String, ?> favorites = sp.getAll();
-                String [] movieData = new String [favorites.size()];
-                int count = 0;
-                for (Map.Entry<String, ?> entry : favorites.entrySet()) {
-                    movieData[count] = entry.getValue().toString();
-                    count++;
-                }
-                mMovieAdapter.setMovieData(movieData);
+
+
+                mRecyclerView.setAdapter(mMovieAdapter);
+
+                //SharedPreferences sp = getSharedPreferences("favorites", Activity.MODE_PRIVATE);
+                //Map<String, ?> favorites = sp.getAll();
+                //String [] movieData = new String [favorites.size()];
+                //int count = 0;
+                //for (Map.Entry<String, ?> entry : favorites.entrySet()) {
+                //    movieData[count] = entry.getValue().toString();
+                ///    count++;
+                //}
+                //mMovieAdapter.setMovieData(movieData);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -200,5 +224,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+    private Cursor getAllFavorites(){
+        return mDb.query(FavoriteContract.FavoriteEntry.TABLE_NAME,
+                null, null, null, null, null, null);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private final MovieAdapterOnClickHandler mClickHandler;
     private Context context;
+    private int mCount;
 
     public interface MovieAdapterOnClickHandler {
         void onClick(String movie);
@@ -27,6 +29,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
+    }
+
+    public MovieAdapter(MovieAdapterOnClickHandler clickHandler, int count) {
+        mClickHandler = clickHandler;
+        mCount = count;
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,8 +76,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public int getItemCount() {
-        if (null == mMovieData) return 0;
-        return mMovieData.length;
+        return mCount;
     }
 
     public void setMovieData(String[] movieData) {
